@@ -1,14 +1,18 @@
 {
-  "name": "weatherapp",
+  "name": "state-machines",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "format-check": "prettier --check './src/**/*.{js,ts,tsx}'",
+    "format-code": "prettier --write './src/**/*.{js,ts,tsx}'"
   },
   "dependencies": {
+    "@xstate/inspect": "^0.7.0",
+    "@xstate/react": "^3.0.0",
     "next": "12.1.6",
     "react": "18.2.0",
     "react-dom": "18.2.0"
@@ -19,6 +23,7 @@
     "@types/react-dom": "18.0.5",
     "eslint": "8.18.0",
     "eslint-config-next": "12.1.6",
+    "prettier": "2.7.1",
     "typescript": "4.7.4"
   }
 }
