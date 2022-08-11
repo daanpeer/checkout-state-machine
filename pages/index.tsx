@@ -1,11 +1,12 @@
 import type { NextPage } from "next";
 import { inspect } from "@xstate/inspect";
 import { useMachine } from "@xstate/react";
-import { checkoutMachine } from "../machines/checkoutMachine";
+import { checkoutMachine, Steps } from "../machines/checkoutMachine";
 import { Step } from "../components/Step";
 import { AddressForm } from "../components/AddressForm";
 import { PersonalForm } from "../components/PersonalForm";
 import { ContactForm } from "../components/ContactForm";
+import { Stepper } from "../components/Stepper";
 
 if (typeof window !== "undefined") {
   inspect({
@@ -13,15 +14,14 @@ if (typeof window !== "undefined") {
   });
 }
 
-// @TODO: Add stepper (When time)
 // @TODO: Add @xstate/test
 // @TODO: Maybe add some analytics or something?
 
 const Checkout: NextPage = () => {
   const [state, send] = useMachine(checkoutMachine, { devTools: true });
-
   return (
     <>
+      {!["success", "submitting", "error"].some(state.matches) && <Stepper activeStep={state.value.toString()} />}
       {state.matches("submitting") && <Step icon={`🕰`} title="Loading.." />}
       {state.matches("overview") && (
         <Step
@@ -67,7 +67,10 @@ const Checkout: NextPage = () => {
                 address,
               });
             }}
-            initialAddress={state.context.address}
+            initialAddress={{
+              postalCode: state.context.address.postalCode || "8000ab",
+              houseNumber: state.context.address.houseNumber || "123",
+            }}
           />
         </Step>
       )}
@@ -99,7 +102,10 @@ const Checkout: NextPage = () => {
                 personal,
               });
             }}
-            initialPersonal={state.context.personalData}
+            initialPersonal={{
+              firstName: state.context.personalData.firstName || "Saul",
+              lastName: state.context.personalData.lastName || "Goodman",
+            }}
           />
         </Step>
       )}
@@ -131,7 +137,10 @@ const Checkout: NextPage = () => {
                 contact,
               });
             }}
-            initialContact={state.context.contact}
+            initialContact={{
+              email: state.context.contact.email || "saul@goodman.com",
+              phoneNumber: state.context.contact.phoneNumber || "06123456789",
+            }}
           />
         </Step>
       )}

@@ -1,67 +1,33 @@
-import { createMachine, assign } from "xstate";
-import { Address, Contact, Personal } from "../types";
-
-interface Context {
-  tries: number;
-  address: Address;
-  personalData: Personal;
-  contact: Contact;
-}
-
-const validateAddress = ({ address: { houseNumber, postalCode } }: Context) =>
-  houseNumber !== "" && postalCode !== "";
-
-const validPersonalDetails = ({
-  personalData: { firstName, lastName },
-}: Context) => firstName !== "" && lastName !== "";
-
-const validContact = ({ contact: { phoneNumber, email } }: Context) =>
-  phoneNumber !== "" && email !== "";
+import { assign, createMachine } from "xstate";
+import {
+  validateAddress,
+  validContact,
+  validPersonalDetails,
+} from "./validation";
+import { Context, Events } from "./types";
 
 const initialContext: Context = {
   tries: 0,
   address: {
-    houseNumber: "99",
-    postalCode: "89123ax",
+    houseNumber: "",
+    postalCode: "",
   },
   personalData: {
-    firstName: "Saul",
-    lastName: "Goodman",
+    firstName: "",
+    lastName: "",
   },
   contact: {
-    phoneNumber: "0521-better-call-saul",
-    email: "saul@goodman.com",
+    phoneNumber: "",
+    email: "",
   },
 };
 
-type Events =
-  | {
-      type: "COMMIT_ADDRESS";
-      address: Address;
-    }
-  | {
-      type: "COMMIT_CONTACT";
-      contact: Contact;
-    }
-  | {
-      type: "COMMIT_PERSONAL_DATA";
-      personal: Personal;
-    }
-  | {
-      type: "NEXT";
-    }
-  | {
-      type: "PREV";
-    }
-  | {
-      type: "RESET";
-    }
-  | {
-      type: "SUBMIT";
-    }
-  | {
-      type: "RETRY";
-    };
+export enum Steps {
+  Overview = 'overview',
+  Address = 'address',
+  PersonalDetails = 'personalDetails',
+  Contact = 'contact',
+}
 
 export const checkoutMachine = createMachine<Context, Events>(
   {
@@ -69,12 +35,12 @@ export const checkoutMachine = createMachine<Context, Events>(
     context: initialContext,
     initial: "overview",
     states: {
-      overview: {
+      [Steps.Overview]: {
         on: {
           NEXT: "address",
         },
       },
-      address: {
+      [Steps.Address]: {
         on: {
           COMMIT_ADDRESS: {
             actions: assign({
@@ -88,7 +54,7 @@ export const checkoutMachine = createMachine<Context, Events>(
           PREV: "overview",
         },
       },
-      personalDetails: {
+      [Steps.PersonalDetails]: {
         on: {
           COMMIT_PERSONAL_DATA: {
             actions: assign({
@@ -102,7 +68,7 @@ export const checkoutMachine = createMachine<Context, Events>(
           PREV: "address",
         },
       },
-      contact: {
+      [Steps.Contact]: {
         on: {
           COMMIT_CONTACT: {
             actions: assign({
