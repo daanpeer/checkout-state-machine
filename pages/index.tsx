@@ -14,9 +14,6 @@ if (typeof window !== "undefined") {
   });
 }
 
-// @TODO: Add @xstate/test
-// @TODO: Maybe add some analytics or something?
-
 const Checkout: NextPage = () => {
   const [state, send] = useMachine(checkoutMachine, { devTools: true });
   return (
@@ -166,16 +163,6 @@ const Checkout: NextPage = () => {
         <Step
           icon={`✅`}
           title="SUCCESS!"
-          actions={
-            <>
-              <button
-                onClick={() => send("RESET")}
-                disabled={!state.can("RESET")}
-              >
-                Order more internet!!
-              </button>
-            </>
-          }
         >
           <h1>Success!</h1>
         </Step>

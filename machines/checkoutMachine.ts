@@ -37,7 +37,7 @@ export const checkoutMachine = createMachine<Context, Events>(
     states: {
       [Steps.Overview]: {
         on: {
-          NEXT: "address",
+          NEXT: Steps.Address,
         },
       },
       [Steps.Address]: {
@@ -49,7 +49,7 @@ export const checkoutMachine = createMachine<Context, Events>(
           },
           NEXT: {
             cond: validateAddress,
-            target: "personalDetails",
+            target: Steps.PersonalDetails,
           },
           PREV: "overview",
         },
@@ -63,7 +63,7 @@ export const checkoutMachine = createMachine<Context, Events>(
           },
           NEXT: {
             cond: validPersonalDetails,
-            target: "contact",
+            target: Steps.Contact,
           },
           PREV: "address",
         },
@@ -75,7 +75,7 @@ export const checkoutMachine = createMachine<Context, Events>(
               contact: (_, e) => e.contact,
             }),
           },
-          PREV: "personalDetails",
+          PREV: Steps.PersonalDetails,
           SUBMIT: {
             target: "submitting",
             cond: validContact,
@@ -98,12 +98,7 @@ export const checkoutMachine = createMachine<Context, Events>(
         },
       },
       success: {
-        on: {
-          RESET: {
-            target: "overview",
-            actions: assign(() => initialContext),
-          },
-        },
+        type: "final",
       },
     },
   },

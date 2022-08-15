@@ -35,7 +35,7 @@ export const ContactForm = ({ initialContact, onSubmitContact }: Props) => {
         value={phoneNumber}
         label="Phone number"
       />
-      <button type="submit">Submit address</button>
+      <button type="submit">Submit contact information</button>
     </form>
   );
 };
