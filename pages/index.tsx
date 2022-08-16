@@ -1,15 +1,17 @@
 import type { NextPage } from "next";
 import { inspect } from "@xstate/inspect";
 import { useMachine } from "@xstate/react";
-import { checkoutMachine, Steps } from "../machines/checkoutMachine";
+import { checkoutMachine } from "../machines/checkoutMachine";
 import { Step } from "../components/Step";
 import { AddressForm } from "../components/AddressForm";
 import { PersonalForm } from "../components/PersonalForm";
 import { ContactForm } from "../components/ContactForm";
 import { Stepper } from "../components/Stepper";
+import { Container } from "../components/Container";
 
 if (typeof window !== "undefined") {
   inspect({
+    // iframe: document.querySelector("#debugger") as HTMLIFrameElement,
     iframe: false,
   });
 }
@@ -17,8 +19,10 @@ if (typeof window !== "undefined") {
 const Checkout: NextPage = () => {
   const [state, send] = useMachine(checkoutMachine, { devTools: true });
   return (
-    <>
-      {!["success", "submitting", "error"].some(state.matches) && <Stepper activeStep={state.value.toString()} />}
+    <Container>
+      {!["success", "submitting", "error"].some(state.matches) && (
+        <Stepper activeStep={state.value.toString()} />
+      )}
       {state.matches("submitting") && <Step icon={`🕰`} title="Loading.." />}
       {state.matches("overview") && (
         <Step
@@ -160,14 +164,17 @@ const Checkout: NextPage = () => {
         </Step>
       )}
       {state.matches("success") && (
-        <Step
-          icon={`✅`}
-          title="SUCCESS!"
-        >
-          <h1>Success!</h1>
-        </Step>
+        <Step icon={`✅`} title="SUCCESS!" />
       )}
-    </>
+      <iframe
+        id="debugger"
+        style={{
+          flexGrow: 1,
+          border: 0,
+          width: "100%",
+        }}
+      ></iframe>
+    </Container>
   );
 };
 
