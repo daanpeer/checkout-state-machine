@@ -6,32 +6,3 @@ export interface Context {
   personalData: Personal;
   contact: Contact;
 }
-
-export type Events =
-  | {
-      type: "COMMIT_ADDRESS";
-      address: Address;
-    }
-  | {
-      type: "COMMIT_CONTACT";
-      contact: Contact;
-    }
-  | {
-      type: "COMMIT_PERSONAL_DATA";
-      personal: Personal;
-    }
-  | {
-      type: "NEXT";
-    }
-  | {
-      type: "PREV";
-    }
-  | {
-      type: "RESET";
-    }
-  | {
-      type: "SUBMIT";
-    }
-  | {
-      type: "RETRY";
-    };

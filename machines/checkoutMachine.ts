@@ -1,10 +1,12 @@
-import { assign, createMachine } from "xstate";
+import { assign } from "xstate";
 import {
   validateAddress,
   validContact,
   validPersonalDetails,
 } from "./validation";
-import { Context, Events } from "./types";
+import { Context } from "./types";
+import { Address, Contact, Personal } from "../types";
+import {createModel} from "xstate/lib/model";
 
 const initialContext: Context = {
   tries: 0,
@@ -29,23 +31,42 @@ export enum Steps {
   Contact = 'contact',
 }
 
-export const checkoutMachine = createMachine<Context, Events>(
+const checkoutModel = createModel(initialContext, {
+  events: {
+    COMMIT_ADDRESS: (address: Address) => ({ address }),
+    NEXT: () => ({}),
+    PREV: () => ({}),
+    COMMIT_PERSONAL_DATA: (personal: Personal) => ({ personal }),
+    COMMIT_CONTACT: (contact: Contact) => ({ contact }),
+    SUBMIT: () => ({}),
+    RETRY: () => ({}),
+  },
+});
+
+export const checkoutMachine = checkoutModel.createMachine(
   {
     id: "wizard",
-    context: initialContext,
+    context: checkoutModel.initialContext,
     initial: "overview",
+    schema: {
+      services: {} as {
+        submit: {
+          data: void,
+        },
+      }
+    },
     states: {
       [Steps.Overview]: {
         on: {
-          NEXT: Steps.Address,
+          NEXT: "address",
         },
       },
       [Steps.Address]: {
         on: {
           COMMIT_ADDRESS: {
-            actions: assign({
-              address: (_, e) => e.address,
-            }),
+            actions: checkoutModel.assign((ctx, e) => ({
+              address: e.address,
+            })),
           },
           NEXT: {
             cond: validateAddress,
@@ -71,7 +92,7 @@ export const checkoutMachine = createMachine<Context, Events>(
       [Steps.Contact]: {
         on: {
           COMMIT_CONTACT: {
-            actions: assign({
+            actions: checkoutModel.assign({
               contact: (_, e) => e.contact,
             }),
           },
